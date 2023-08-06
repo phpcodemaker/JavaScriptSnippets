@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reverse String less iterative</title>
+    <script>
+        let reversedString = string = ("Javascript").split("");
+        let stringLength = string.length;
+
+        document.writeln("<h1> Before => " + string.join("") + " </h1> ");
+        for (let index = 0; index <= (stringLength / 2) - 1; index++) {
+            [ string[(stringLength - index) - 1], string[index] ] = [ string[index],  string[(stringLength - index) - 1] ];
+        }
+        document.writeln("<h1> After => " + reversedString.join("")  + " </h1> ");
+    </script>
+</head>
+<body>
+    <!-- The view will be rendered in runtime by Javascript-->
+</body>
+</html>

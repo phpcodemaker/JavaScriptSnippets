@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Circular Reference</title>
+    <script>
+        const circularReference = { otherData: 123 };
+        circularReference.myself = circularReference;
+        /**
+         * CircularReference.html:9 Uncaught TypeError: Converting circular structure to JSON
+         *     --> starting at object with constructor 'Object'
+         *     --- property 'myself' closes the circle
+         *     at JSON.stringify (<anonymous>)
+         *     at CircularReference.html:9:29
+         */
+        // document.write(JSON.stringify(circularReference));
+
+        // Safely handles circular references
+        JSON.safeStringify = (obj, indent = 2) => {
+            let cache = [];
+            const retVal = JSON.stringify(
+                obj,
+                (key, value) =>
+                    typeof value === "object" && value !== null
+                        ? cache.includes(value)
+                            ? undefined // Duplicate reference found, discard key
+                            : cache.push(value) && value // Store value in our collection
+                        : value,
+                indent
+            );
+            cache = null;
+            return retVal;
+        };
+
+        // Example:
+        document.write(JSON.safeStringify(circularReference));
+
+        function getCircularReplacer() {
+            const ancestors = [];
+            return function (key, value) {
+                if (typeof value !== "object" || value === null) {
+                    return value;
+                }
+                // `this` is the object that value is contained in,
+                // i.e., its direct parent.
+                while (ancestors.length > 0 && ancestors.at(-1) !== this) {
+                    ancestors.pop();
+                }
+                if (ancestors.includes(value)) {
+                    return "[Circular]";
+                }
+                ancestors.push(value);
+                return value;
+            };
+        }
+
+        document.writeln(JSON.stringify(circularReference, getCircularReplacer()));
+
+        console.log(JSON.stringify(circularReference, getCircularReplacer()));
+        console.log(circularReference);
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
